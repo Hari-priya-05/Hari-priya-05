@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_QUEUE_SIZE 100
+
+// Structure to represent a vehicle
+typedef struct {
+    int id;
+    time_t arrivalTime;
+} Vehicle;
+
+// Queue data structure
+typedef struct {
+    Vehicle items[MAX_QUEUE_SIZE];
+    int front;
+    int rear;
+} Queue;
+
+// Function to initialize the queue
+void initializeQueue(Queue *q) {
+    q->front = -1;
+    q->rear = -1;
+}
+
+// Function to check if the queue is empty
+int isEmpty(Queue *q) {
+    return (q->front == -1);
+}
+
+// Function to check if the queue is full
+int isFull(Queue *q) {
+    return (q->rear == MAX_QUEUE_SIZE - 1);
+}
+
+// Function to add a vehicle to the queue (enqueue)
+void enqueue(Queue *q, int vehicleId) {
+    if (isFull(q)) {
+        printf("Queue is full! Cannot add more vehicles.\n");
+        return;
+    }
+    if (isEmpty(q)) {
+        q->front = 0;
+    }
+    q->rear++;
+    q->items[q->rear].id = vehicleId;
+    q->items[q->rear].arrivalTime = time(NULL);
+    printf("Vehicle %d added to the queue at %s", vehicleId, ctime(&(q->items[q->rear].arrivalTime)));
+}
+
+// Function to remove a vehicle from the queue (dequeue)
+Vehicle dequeue(Queue *q) {
+    Vehicle v = {0, 0};
+    if (isEmpty(q)) {
+        printf("Queue is empty! No vehicles to remove.\n");
+        return v;
+    }
+    v = q->items[q->front];
+    q->front++;
+    if (q->front > q->rear) {
+        q->front = q->rear = -1;
+    }
+    time_t departureTime = time(NULL);
+    printf("Vehicle %d passed the signal at %s", v.id, ctime(&departureTime));
+    return v;
+}
+
+// Function to count the vehicles in the queue
+int countVehicles(Queue *q) {
+    if (isEmpty(q)) {
+        return 0;
+    }
+    return (q->rear - q->front + 1);
+}
+
+int main() {
+    Queue q;
+    initializeQueue(&q);
+
+    // Simulating vehicle arrivals and departures
+    enqueue(&q, 1); // Vehicle 1 arrives
+    enqueue(&q, 2); // Vehicle 2 arrives
+    enqueue(&q, 3); // Vehicle 3 arrives
+
+    printf("Current vehicle count: %d\n", countVehicles(&q));
+
+    // Simulate time passing
+    dequeue(&q); // Vehicle 1 passes the signal
+   // Simulate more time passing
+    dequeue(&q); // Vehicle 2 passes the signal
+
+    printf("Current vehicle count: %d\n", countVehicles(&q));
+
+    enqueue(&q, 4); // Vehicle 4 arrives
+    enqueue(&q, 5); // Vehicle 5 arrives
+    
