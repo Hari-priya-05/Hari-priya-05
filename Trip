@@ -1,0 +1,68 @@
+from datetime import datetime
+
+class TravelPlanner:
+    def __init__(self):
+        self.trips = []
+
+    def add_trip(self, destination, start_date, end_date):
+        trip = {
+            'destination': destination,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+        self.trips.append(trip)
+        print(f"Trip to {destination} added.")
+
+    def view_trips(self):
+        if not self.trips:
+            print("No trips planned.")
+            return
+        
+        for i, trip in enumerate(self.trips, 1):
+            print(f"{i}. Destination: {trip['destination']}, Start Date: {trip['start_date']}, End Date: {trip['end_date']}")
+
+    def delete_trip(self, index):
+        if 0 <= index < len(self.trips):
+            removed_trip = self.trips.pop(index)
+            print(f"Trip to {removed_trip['destination']} deleted.")
+        else:
+            print("Invalid index.")
+
+def get_date_input(prompt):
+    while True:
+        try:
+            date_str = input(prompt)
+            date = datetime.strptime(date_str, "%Y-%m-%d")
+            return date
+        except ValueError:
+            print("Invalid date format. Please use YYYY-MM-DD.")
+
+def main():
+    planner = TravelPlanner()
+
+    while True:
+        print("\nTravel Planner Menu:")
+        print("1. Add Trip")
+        print("2. View Trips")
+        print("3. Delete Trip")
+        print("4. Exit")
+        choice = input("Choose an option: ")
+
+        if choice == '1':
+            destination = input("Enter destination: ")
+            start_date = get_date_input("Enter start date (YYYY-MM-DD): ")
+            end_date = get_date_input("Enter end date (YYYY-MM-DD): ")
+            planner.add_trip(destination, start_date, end_date)
+        elif choice == '2':
+            planner.view_trips()
+        elif choice == '3':
+            index = int(input("Enter the trip number to delete: ")) - 1
+            planner.delete_trip(index)
+        elif choice == '4':
+            print("Exiting Travel Planner.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
