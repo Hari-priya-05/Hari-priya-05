@@ -1,0 +1,122 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class GuessTheNumberGame {
+    private static JFrame frame;
+    private static JLabel label;
+    private static JTextField guessInput;
+    private static JButton submitButton;
+    private static JButton playAgainButton;
+    private static JButton exitButton;
+    private static JLabel attemptsLabel;
+    private static int randomNumber;
+    private static int attempts;
+    private static int maxAttempts;
+    private static int minRange = 1, maxRange = 100;
+    
+    public static void main(String[] args) {
+        frame = new JFrame("Guess the Number Game");
+        frame.setSize(400, 300);
+        frame.setLayout(new FlowLayout());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        label = new JLabel("Guess the number between " + minRange + " and " + maxRange);
+        guessInput = new JTextField(10);
+        submitButton = new JButton("Submit Guess");
+        playAgainButton = new JButton("Play Again");
+        exitButton = new JButton("Exit");
+        attemptsLabel = new JLabel("Attempts: 0");
+        
+        frame.add(label);
+        frame.add(guessInput);
+        frame.add(submitButton);
+        frame.add(attemptsLabel);
+        frame.add(playAgainButton);
+        frame.add(exitButton);
+        
+        submitButton.setEnabled(true);
+        playAgainButton.setEnabled(false);
+        exitButton.setEnabled(true);
+        
+        submitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                processGuess();
+            }
+        });
+        
+        playAgainButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                startNewGame();
+            }
+        });
+        
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        String[] difficulties = {"Easy", "Medium", "Hard"};
+        String difficulty = (String) JOptionPane.showInputDialog(frame, "Choose difficulty level", "Difficulty", 
+                        JOptionPane.QUESTION_MESSAGE, null, difficulties, difficulties[0]);
+        
+        setDifficulty(difficulty);
+        startNewGame();
+        
+        frame.setVisible(true);
+    }
+    
+    private static void setDifficulty(String difficulty) {
+        switch (difficulty) {
+            case "Easy":
+                maxRange = 50;
+                maxAttempts = 10;
+                break;
+            case "Medium":
+                maxRange = 100;
+                maxAttempts = 7;
+                break;
+            case "Hard":
+                maxRange = 200;
+                maxAttempts = 5;
+                break;
+        }
+        label.setText("Guess the number between " + minRange + " and " + maxRange);
+    }
+    
+    private static void startNewGame() {
+        randomNumber = (int) (Math.random() * (maxRange - minRange + 1)) + minRange;
+        attempts = 0;
+        attemptsLabel.setText("Attempts: 0");
+        guessInput.setText("");
+        submitButton.setEnabled(true);
+        playAgainButton.setEnabled(false);
+    }
+    
+    private static void processGuess() {
+        try {
+            int guess = Integer.parseInt(guessInput.getText());
+            attempts++;
+            attemptsLabel.setText("Attempts: " + attempts);
+            
+            if (guess < randomNumber) {
+                label.setText("Too Low! Try again.");
+            } else if (guess > randomNumber) {
+                label.setText("Too High! Try again.");
+            } else {
+                label.setText("Correct! You guessed the number!");
+                submitButton.setEnabled(false);
+                playAgainButton.setEnabled(true);
+            }
+            
+            if (attempts >= maxAttempts && guess != randomNumber) {
+                label.setText("You've reached the max attempts. The number was " + randomNumber);
+                submitButton.setEnabled(false);
+                playAgainButton.setEnabled(true);
+            }
+        } catch (NumberFormatException e) {
+            label.setText("Please enter a valid number.");
+        }
+    }
+}
